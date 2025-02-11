@@ -14,6 +14,8 @@ export default {
       },
       fontFamily: {
         sans: ["var(--font-inter)", "sans-serif"],
+        nunito: ["var(--font-nunito)", "sans-serif"],
+        "dm-serif-display": ["var(--font-dm-serif-display)", "serif"],
       },
     },
   },
