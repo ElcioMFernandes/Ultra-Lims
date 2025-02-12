@@ -6,12 +6,7 @@ import mongoose from "mongoose";
 const app = express();
 const port = 3000;
 
-app.use(
-  cors({
-    origin: "http://localhost:3001",
-  })
-);
-
+app.use(cors());
 mongoose.connect("mongodb://localhost:27017/cep");
 
 const cepSchema = new mongoose.Schema({
@@ -36,6 +31,11 @@ const fetch = async (cep: string) => {
   console.log(`Fetching data from ${cep}`);
   try {
     const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+
+    if (response.data.erro) {
+      return { message: "CEP não encontrado" };
+    }
+    
     const cepData = new Cep(response.data);
     await cepData.save();
 
@@ -52,6 +52,10 @@ app.use((req, res, next) => {
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`);
+});
+
+app.route("/").get((req, res) => {
+  res.json({ status: "OK" });
 });
 
 app.route("/api/v1").get(async (req, res) => {
