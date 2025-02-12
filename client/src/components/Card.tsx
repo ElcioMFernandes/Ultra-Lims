@@ -9,11 +9,11 @@ export const Card = (props: CardProps) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div
-      className="shadow rounded-lg border border-black p-4 transition-all cursor-pointer"
-      onClick={() => setExpanded(!expanded)}
-    >
-      <p className="text-lg flex justify-between">
+    <div className="shadow border border-black transition-all cursor-pointer">
+      <p
+        className="text-lg flex justify-between p-4"
+        onClick={() => setExpanded(!expanded)}
+      >
         {props.title}
         <svg
           className={`w-6 h-6 text-black transition-transform duration-300 ${
@@ -35,7 +35,11 @@ export const Card = (props: CardProps) => {
           />
         </svg>
       </p>
-      {expanded && <p className="mt-2">{props.details}</p>}
+      {expanded && (
+        <p className="select-text cursor-text border mx-4 py-4 border-t-black border-transparent">
+          {props.details}
+        </p>
+      )}
     </div>
   );
 };

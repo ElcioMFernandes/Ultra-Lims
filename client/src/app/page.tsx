@@ -10,7 +10,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get("http://192.168.1.15:3000/api/v1/");
+      const response = await axios.get("http://192.168.21.140:3000/api/v1");
       if (response.status === 200) {
         setCeps(response.data);
       } else {
@@ -34,10 +34,16 @@ const Home = () => {
           <p className="text-7xl text-left">
             Consulte endereços a partir de um CEP sem complicação.
           </p>
-          <input
-            className="w-1/4 bg-transparent border border-transparent border-b-black"
-            type="text"
-          />
+          <div>
+            <label htmlFor="cep" className="text-2xl">
+              CEP:
+            </label>
+            <input
+              id="cep"
+              className="w-1/4 bg-transparent border border-transparent border-b-black"
+              type="text"
+            />
+          </div>
         </div>
         <div className="col-span-1 row-span-11 grid grid-rows-12 grid-cols-1 p-4">
           <ul className="flex justify-around drop-shadow-lg items-center">
@@ -46,7 +52,7 @@ const Home = () => {
             <button>Bairro</button>
             <button>Estado</button>
           </ul>
-          <ul className="grid col-span-3 row-span-11 gap-4 overflow-y-auto">
+          <ul className="grid col-span-3 row-span-11 overflow-y-auto gap-3">
             {ceps.map((cep) => (
               <li key={cep._id}>
                 <Card
