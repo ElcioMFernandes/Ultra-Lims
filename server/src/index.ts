@@ -2,6 +2,7 @@ import cors from "cors";
 import axios from "axios";
 import express from "express";
 import mongoose from "mongoose";
+import { cepSchema } from "./schema/cep";
 
 const app = express();
 const port = 3000;
@@ -25,9 +26,8 @@ const fetch = async (cep: string) => {
     }
 
     const cepData = new Cep(response.data);
-    await cepData.save();
 
-    return response.data;
+    return await cepData.save();
   } catch (error) {
     return error;
   }
@@ -101,15 +101,19 @@ app.route("/api/v1/:cep").get(async (req, res) => {
     cep = `${cep.substring(0, 5)}-${cep.substring(5)}`;
   }
 
-  // Busca o CEP no banco de dados
-  const cepData = await Cep.findOne({ cep: cep });
+  // Busca o CEP no banco de dados usando regex
+  const cepData = await Cep.find({ cep: { $regex: cep, $options: "i" } });
 
   // Se o CEP existir no banco de dados, retorna os dados
-  if (cepData) {
+  if (cepData.length > 0) {
     res.json(cepData);
 
     // Se o CEP não existir no banco de dados, busca os dados na API externa
+  } else if (req.params.cep.replace(/\D/g, "").length == 8) {
+    await fetch(req.params.cep);
+
+    res.json(await Cep.find({ cep: { $regex: cep, $options: "i" } }));
   } else {
-    res.json(await fetch(req.params.cep));
+    res.json({ message: "CEP inválido" });
   }
 });

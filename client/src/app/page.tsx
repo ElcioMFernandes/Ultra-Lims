@@ -6,11 +6,12 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/Card";
 
 const Home = () => {
+  const [cep, setCep] = useState("");
   const [ceps, setCeps] = useState<Cep[]>([]);
 
   useEffect(() => {
     const fetch = async () => {
-      const response = await axios.get("http://192.168.21.140:3000/api/v1");
+      const response = await axios.get("http://192.168.1.15:3000/api/v1");
       if (response.status === 200) {
         setCeps(response.data);
       } else {
@@ -19,6 +20,20 @@ const Home = () => {
     };
     fetch();
   }, []);
+
+  useEffect(() => {
+    const fetch = async () => {
+      const response = await axios.get(
+        `http://192.168.1.15:3000/api/v1/${cep}`
+      );
+      if (response.status === 200) {
+        setCeps(response.data);
+      } else {
+        console.error("Error");
+      }
+    };
+    fetch();
+  }, [cep]);
 
   return (
     <>
@@ -40,8 +55,10 @@ const Home = () => {
             </label>
             <input
               id="cep"
-              className="w-1/4 bg-transparent border border-transparent border-b-black"
+              className="w-1/4 bg-transparent border border-transparent border-b-black focus:outline-none"
               type="text"
+              value={cep}
+              onChange={(e) => setCep(e.target.value)}
             />
           </div>
         </div>
@@ -52,15 +69,21 @@ const Home = () => {
             <button>Bairro</button>
             <button>Estado</button>
           </ul>
-          <ul className="grid col-span-3 row-span-11 overflow-y-auto gap-3">
-            {ceps.map((cep) => (
-              <li key={cep._id}>
-                <Card
-                  title={`${cep.cep} - ${cep.logradouro}, ${cep.bairro} - ${cep.localidade} (${cep.uf})`}
-                  details={`IBGE: ${cep.ibge} | DDD: ${cep.ddd} | Região: ${cep.regiao}`}
-                ></Card>
-              </li>
-            ))}
+          <ul className="col-span-3 row-span-11 overflow-y-auto flex flex-col gap-3">
+            {Array.isArray(ceps) && ceps.length > 0 ? (
+              ceps.map((cep) => (
+                <li key={cep._id}>
+                  <Card
+                    title={`${cep.cep} - ${cep.logradouro}, ${cep.bairro} - ${cep.localidade} (${cep.uf})`}
+                    details={`IBGE: ${cep.ibge} | DDD: ${cep.ddd} | Região: ${cep.regiao}`}
+                  ></Card>
+                </li>
+              ))
+            ) : (
+              <p className="h-full flex items-center justify-center text-2xl">
+                Nenhum CEP encontrado
+              </p>
+            )}
           </ul>
         </div>
       </div>
